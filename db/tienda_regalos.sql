@@ -1,0 +1,159 @@
+-- ------------------------------------------------------------
+-- Base de datos: tienda_regalos
+-- Sistema de gestión para tienda de regalos con múltiples sucursales
+-- ------------------------------------------------------------
+
+CREATE DATABASE IF NOT EXISTS tienda_regalos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tienda_regalos;
+
+-- ------------------------------------------------------------
+-- Tabla: sucursales
+-- ------------------------------------------------------------
+CREATE TABLE sucursales (
+  id_sucursal INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  direccion VARCHAR(200),
+  telefono VARCHAR(20),
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ------------------------------------------------------------
+-- Tabla: categorias
+-- ------------------------------------------------------------
+CREATE TABLE categorias (
+  id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+  nombre_categoria VARCHAR(100) NOT NULL,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ------------------------------------------------------------
+-- Tabla: productos
+-- ------------------------------------------------------------
+CREATE TABLE productos (
+  id_producto INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  codigo_barras VARCHAR(50) UNIQUE,
+  categoria_id INT,
+  costo DECIMAL(10,2),
+  precio DECIMAL(10,2),
+  foto VARCHAR(255) DEFAULT NULL,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (categoria_id) REFERENCES categorias(id_categoria)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: detalles_producto (solo para ropa y calzado)
+-- ------------------------------------------------------------
+CREATE TABLE detalles_producto (
+  id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT,
+  talla VARCHAR(20),
+  modelo VARCHAR(100),
+  color VARCHAR(50),
+  FOREIGN KEY (producto_id) REFERENCES productos(id_producto)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: inventario_sucursal
+-- ------------------------------------------------------------
+CREATE TABLE inventario_sucursal (
+  id_inventario INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT,
+  sucursal_id INT,
+  stock INT DEFAULT 0,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (producto_id) REFERENCES productos(id_producto),
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: clientes
+-- ------------------------------------------------------------
+CREATE TABLE clientes (
+  id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+  sucursal_id INT,
+  nombre VARCHAR(100),
+  telefono VARCHAR(20),
+  correo VARCHAR(100),
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: ventas
+-- ------------------------------------------------------------
+CREATE TABLE ventas (
+  id_venta INT AUTO_INCREMENT PRIMARY KEY,
+  cliente_id INT,
+  sucursal_id INT,
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  total DECIMAL(10,2),
+  descuento DECIMAL(10,2) DEFAULT 0,
+  metodo_pago ENUM('efectivo', 'tarjeta', 'transferencia', 'abono') DEFAULT 'efectivo',
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id_cliente),
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: abonos
+-- ------------------------------------------------------------
+CREATE TABLE abonos (
+  id_abono INT AUTO_INCREMENT PRIMARY KEY,
+  venta_id INT,
+  monto DECIMAL(10,2),
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (venta_id) REFERENCES ventas(id_venta)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: detalle_venta
+-- ------------------------------------------------------------
+CREATE TABLE detalle_venta (
+  id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+  venta_id INT,
+  producto_id INT,
+  cantidad INT,
+  precio_unitario DECIMAL(10,2),
+  subtotal DECIMAL(10,2),
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (venta_id) REFERENCES ventas(id_venta),
+  FOREIGN KEY (producto_id) REFERENCES productos(id_producto)
+);
+
+-- ------------------------------------------------------------
+-- Datos iniciales
+-- ------------------------------------------------------------
+INSERT INTO sucursales (nombre, direccion, telefono) VALUES
+('Sucursal 1', 'Centro', '555-111-2222'),
+('Sucursal 2', 'Norte', '555-333-4444');
+
+INSERT INTO categorias (nombre_categoria) VALUES
+('Ropa'),
+('Calzado'),
+('Accesorios'),
+('Belleza'),
+('Regalos'),
+('Navidad'),
+('Halloween'),
+('15 Septiembre'),
+('Día de Reyes');
+
+-- Fin del script

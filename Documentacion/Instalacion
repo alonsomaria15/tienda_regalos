@@ -1,0 +1,63 @@
+#1. Verificamos que Node.js y npm ya fue instalado
+    node -v
+    npm -v
+Nota: Si no ha sido instalado lo instalamos
+	sudo apt update
+	sudo apt install -y nodejs npm
+Y la version mas reciente de node
+	sudo npm install -g n
+	sudo n stable
+
+#2. Ejecutamos el comando para instalar react y typescript, dentro de la carpeta fronted
+	npx create-react-app frontend --template typescript
+
+#3. entramos a la carpeta fronted 
+	cd frontend
+#comprobamos que todo fue instalada correctamente, probando:
+	npm start
+http://localhost:3001/
+
+#4. Dentro del proyecto instalamos taiwind 
+	npm install -D tailwindcss postcss autoprefixer
+	npx tailwindcss init -p
+//Nos creara los siguientes archivos 
+	tailwind.config.js
+	postcss.config.js
+
+Nota: Si no nos deja hacer el paso 4 entonces lo hacemos manual
+
+npm uninstall tailwindcss @tailwindcss/postcss
+npm install -D tailwindcss@3.4.14 postcss autoprefixer
+npx tailwindcss init -p
+
+//eliminamos lo que hay en el src/index.css y pegamos
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+nano tailwind.config.js
+/*
+Pegamos : 
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+*/
+
+nano postcss.config.js
+/*
+Pegamos:
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+*/
