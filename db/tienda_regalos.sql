@@ -75,6 +75,22 @@ CREATE TABLE inventario_sucursal (
 );
 
 -- ------------------------------------------------------------
+-- Tabla: movimientos_inventario
+-- ------------------------------------------------------------
+CREATE TABLE movimientos_inventario (
+  id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT NOT NULL,
+  sucursal_id INT NOT NULL,
+  tipo ENUM('entrada', 'salida') NOT NULL,
+  cantidad INT NOT NULL,
+  concepto VARCHAR(150),
+  observaciones VARCHAR(255),
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (producto_id) REFERENCES productos(id_producto),
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
+);
+
+-- ------------------------------------------------------------
 -- Tabla: clientes
 -- ------------------------------------------------------------
 CREATE TABLE clientes (
@@ -108,20 +124,6 @@ CREATE TABLE ventas (
 );
 
 -- ------------------------------------------------------------
--- Tabla: abonos
--- ------------------------------------------------------------
-CREATE TABLE abonos (
-  id_abono INT AUTO_INCREMENT PRIMARY KEY,
-  venta_id INT,
-  monto DECIMAL(10,2),
-  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-  activo TINYINT(1) DEFAULT 1,
-  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (venta_id) REFERENCES ventas(id_venta)
-);
-
--- ------------------------------------------------------------
 -- Tabla: detalle_venta
 -- ------------------------------------------------------------
 CREATE TABLE detalle_venta (
@@ -137,6 +139,39 @@ CREATE TABLE detalle_venta (
   FOREIGN KEY (venta_id) REFERENCES ventas(id_venta),
   FOREIGN KEY (producto_id) REFERENCES productos(id_producto)
 );
+
+-- ------------------------------------------------------------
+-- Tabla: abonos
+-- ------------------------------------------------------------
+CREATE TABLE abonos (
+  id_abono INT AUTO_INCREMENT PRIMARY KEY,
+  venta_id INT,
+  monto DECIMAL(10,2),
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  movimiento_caja_id INT NULL,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (venta_id) REFERENCES ventas(id_venta)
+);
+
+-- ------------------------------------------------------------
+-- Tabla: movimientos_caja
+-- ------------------------------------------------------------
+CREATE TABLE movimientos_caja (
+  id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
+  sucursal_id INT NOT NULL,
+  tipo ENUM('entrada', 'salida') NOT NULL,
+  concepto VARCHAR(150) NOT NULL,
+  monto DECIMAL(10,2) NOT NULL,
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  observaciones VARCHAR(255),
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
+);
+
+-- Relación abonos → movimientos_caja
+ALTER TABLE abonos
+ADD FOREIGN KEY (movimiento_caja_id) REFERENCES movimientos_caja(id_movimiento);
 
 -- ------------------------------------------------------------
 -- Datos iniciales
@@ -157,3 +192,4 @@ INSERT INTO categorias (nombre_categoria) VALUES
 ('Día de Reyes');
 
 -- Fin del script
+

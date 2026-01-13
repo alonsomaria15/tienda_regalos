@@ -5,6 +5,8 @@ export interface Product {
   precio: number;      // precio de venta
   stock: number;
   categoria_id: number;
+  sucursal: number;
+  estado: string;
   foto: string;
   detalles?: {          // ✅ opcional, solo para Ropa/Calzado
     talla: string;
