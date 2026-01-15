@@ -8,9 +8,13 @@ export interface Product {
   sucursal: number;
   estado: string;
   foto: string;
+  codigo_barras: string;
+  festividad: string;
   detalles?: {          // ✅ opcional, solo para Ropa/Calzado
     talla: string;
     modelo: string;
     color: string;
   };
+  
+  
 }

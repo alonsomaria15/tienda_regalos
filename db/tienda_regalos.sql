@@ -76,19 +76,25 @@ CREATE TABLE inventario_sucursal (
 
 -- ------------------------------------------------------------
 -- Tabla: movimientos_inventario
+-- Registra todos los movimientos físicos de productos:
+-- Entradas, Salidas, Ajustes y Traspasos entre sucursales
 -- ------------------------------------------------------------
 CREATE TABLE movimientos_inventario (
   id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
   producto_id INT NOT NULL,
-  sucursal_id INT NOT NULL,
-  tipo ENUM('entrada', 'salida') NOT NULL,
+  tipo_movimiento ENUM('entrada', 'salida', 'ajuste', 'traspaso') NOT NULL,
   cantidad INT NOT NULL,
+  sucursal_origen_id INT NULL,
+  sucursal_destino_id INT NULL,
   concepto VARCHAR(150),
   observaciones VARCHAR(255),
+  usuario VARCHAR(100),
   fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (producto_id) REFERENCES productos(id_producto),
-  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
-);
+  FOREIGN KEY (sucursal_origen_id) REFERENCES sucursales(id_sucursal),
+  FOREIGN KEY (sucursal_destino_id) REFERENCES sucursales(id_sucursal)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- ------------------------------------------------------------
 -- Tabla: clientes

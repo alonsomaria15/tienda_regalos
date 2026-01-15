@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Product } from "../types/Product";
 
 const Products: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // ⚡ id de la URL
+
   // Categorías
   const categorias = [
     { id: 1, nombre: "Ropa" },
@@ -10,7 +14,16 @@ const Products: React.FC = () => {
     { id: 5, nombre: "Festividades" },
   ];
 
-  // Estado del nuevo producto
+  // Lista de productos (simulado)
+  const [products] = useState<Product[]>([
+    { id: 1, name: "Camiseta", costo: 100, precio: 150, stock: 10, categoria_id: 1, foto: "", sucursal: 1, estado: "", codigo_barras: "PROD-20260115-0001",
+      festividad:"Navidad"
+     },
+    { id: 2, name: "Pantalón", costo: 200, precio: 300, stock: 5, categoria_id: 1, foto: "", sucursal: 2, estado: "", codigo_barras: "PROD-20260115-0002" , festividad:"Hallowen"},
+    { id: 3, name: "Zapatos", costo: 350, precio: 500, stock: 8, categoria_id: 2, foto: "", sucursal: 1, estado: "", codigo_barras: "PROD-20260115-0003", festividad:"15 Septiembre" },
+  ]);
+
+  // Estado del producto (para el formulario)
   const [newProduct, setNewProduct] = useState({
     name: "",
     costo: 0,
@@ -18,32 +31,30 @@ const Products: React.FC = () => {
     stock: 0,
     categoria_id: 0,
     foto: "",
-    ocasion: "",
+    codigo_barras: "",
+    festividad: ""
   });
 
-  // Estado del modal de detalles
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  // Producto a editar
+  const [productoEditar, setProductoEditar] = useState<Product | null>(null);
 
-  // Detalles del producto
+  // Modal de detalles (Ropa/Calzado)
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [productDetails, setProductDetails] = useState({
     talla: "",
     modelo: "",
     color: "",
   });
 
-  // Guardar producto
-  const addProduct = () => {
-    if (!newProduct.name || !newProduct.categoria_id) {
-      alert("Debes ingresar el nombre y seleccionar categoría");
-      return;
-    }
-
-    console.log("Producto agregado:", {
-      ...newProduct,
-      detalles: productDetails,
-    });
-
-    // Resetear
+  // ⚡ Detectar si es edición y rellenar formulario
+  useEffect(() => {
+  if (id) {
+    // Si hay id, buscamos producto para editar
+    const prod = products.find(p => p.id === Number(id));
+    if (prod) setProductoEditar(prod);
+  } else {
+    // Si no hay id, es Agregar: limpiamos formulario y productoEditar
+    setProductoEditar(null);
     setNewProduct({
       name: "",
       costo: 0,
@@ -51,17 +62,99 @@ const Products: React.FC = () => {
       stock: 0,
       categoria_id: 0,
       foto: "",
-      ocasion: "",
+      codigo_barras: "",
+      festividad: ""
     });
     setProductDetails({ talla: "", modelo: "", color: "" });
+  }
+}, [id, products]);
+
+
+  // ⚡ Llenar formulario cuando productoEditar cambie
+  useEffect(() => {
+    if (productoEditar) {
+      setNewProduct({
+        name: productoEditar.name,
+        costo: productoEditar.costo,
+        precio: productoEditar.precio,
+        stock: productoEditar.stock,
+        categoria_id: productoEditar.categoria_id,
+        foto: productoEditar.foto,
+        codigo_barras: productoEditar.codigo_barras,
+        festividad: productoEditar.festividad
+      });
+
+      if (productoEditar.detalles) {
+        setProductDetails({
+          talla: productoEditar.detalles.talla,
+          modelo: productoEditar.detalles.modelo,
+          color: productoEditar.detalles.color,
+        });
+      } else {
+        setProductDetails({ talla: "", modelo: "", color: "" });
+      }
+    }
+  }, [productoEditar]);
+
+  // Guardar producto (Agregar o Actualizar)
+  const addProduct = () => {
+    if (!newProduct.name || !newProduct.categoria_id) {
+      alert("Debes ingresar el nombre y seleccionar categoría");
+      return;
+    }
+
+    const productoAGuardar = { ...newProduct, detalles: productDetails };
+
+    console.log(productoEditar ? "Producto actualizado:" : "Producto agregado:", productoAGuardar);
+
+    // Resetear formulario
+    setNewProduct({
+      name: "",
+      costo: 0,
+      precio: 0,
+      stock: 0,
+      categoria_id: 0,
+      foto: "",
+      codigo_barras: "",
+      festividad: ""
+    });
+    setProductDetails({ talla: "", modelo: "", color: "" });
+    setProductoEditar(null);
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Agregar Producto</h1>
+      {/* 🔹 Título dinámico */}
+      <h1 className="text-3xl font-bold mb-6">
+        {productoEditar ? "Actualizar Producto" : "Agregar Producto"}
+      </h1>
 
       <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl">
         <div className="grid grid-cols-2 gap-4">
+          {/* Miniatura + Código de barras (solo al editar) */}
+          {productoEditar && (
+            <div className="flex gap-4 mb-4 items-center col-span-2">
+              <div className="w-24 h-24 border rounded overflow-hidden">
+                <img
+                  src={productoEditar.foto || "/placeholder.png"}
+                  alt={productoEditar.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block font-semibold mb-1">Código de barras</label>
+                <input
+                  type="text"
+                  value={productoEditar.codigo_barras}
+                  readOnly
+                  className="border p-2 w-full rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          )}
+
+
+
           {/* Nombre */}
           <div>
             <label className="block font-semibold">Producto</label>
@@ -70,9 +163,7 @@ const Products: React.FC = () => {
               placeholder="Nombre del producto"
               className="border p-2 w-full rounded"
               value={newProduct.name}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, name: e.target.value })
-              }
+              onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
             />
           </div>
 
@@ -84,9 +175,7 @@ const Products: React.FC = () => {
               placeholder="Stock"
               className="border p-2 w-full rounded"
               value={newProduct.stock}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, stock: Number(e.target.value) })
-              }
+              onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
             />
           </div>
 
@@ -99,10 +188,7 @@ const Products: React.FC = () => {
               className="border p-2 w-full rounded"
               value={newProduct.costo}
               onChange={(e) =>
-                setNewProduct({
-                  ...newProduct,
-                  costo: Number(e.target.value.replace(/[^0-9.]/g, "")),
-                })
+                setNewProduct({ ...newProduct, costo: Number(e.target.value.replace(/[^0-9.]/g, "")) })
               }
             />
           </div>
@@ -116,93 +202,86 @@ const Products: React.FC = () => {
               className="border p-2 w-full rounded"
               value={newProduct.precio}
               onChange={(e) =>
-                setNewProduct({
-                  ...newProduct,
-                  precio: Number(e.target.value.replace(/[^0-9.]/g, "")),
-                })
+                setNewProduct({ ...newProduct, precio: Number(e.target.value.replace(/[^0-9.]/g, "")) })
               }
             />
           </div>
 
-          {/* Categoría + botón de detalles */}
-          <div className="flex flex-col">
-            <label className="block font-semibold mb-1">Categoría</label>
-            <div className="flex items-center gap-2">
-              <select
-                className="border p-2 w-full rounded"
-                value={newProduct.categoria_id}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    categoria_id: Number(e.target.value),
-                  })
+        {/* Categoría + Botón de detalles + Combo de festividades */}
+<div className="flex flex-col mb-4">
+  <label className="block font-semibold mb-1">Categoría</label>
+
+  <div className="flex items-center gap-2">
+
+    {/* Select de categoría: ancho fijo grande */}
+    <select
+      className="border p-2 rounded w-64"
+      value={newProduct.categoria_id}
+      onChange={(e) =>
+        setNewProduct({ ...newProduct, categoria_id: Number(e.target.value) })
+      }
+    >
+      <option value={0}>Selecciona categoría</option>
+      {categorias.map((cat) => (
+        <option key={cat.id} value={cat.id}>
+          {cat.nombre}
+        </option>
+      ))}
+    </select>
+
+    {/* Botón de detalles solo si Ropa o Calzado */}
+    {(newProduct.categoria_id === 1 || newProduct.categoria_id === 2) && (
+      <button
+        type="button"
+        onClick={() => setShowDetailsModal(true)}
+        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        ➕
+      </button>
+    )}
+
+    {/* Combo de festividades solo si categoría = 5 */}
+    {newProduct.categoria_id === 5 && (
+      <select
+        className="border p-2 rounded flex-grow"
+        value={newProduct.festividad || ""}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, festividad: e.target.value })
+        }
+      >
+        <option value="">Selecciona festividad</option>
+        <option value="Día de Reyes">Día de Reyes</option>
+        <option value="Navidad">Navidad</option>
+        <option value="Halloween">Halloween</option>
+        <option value="15 de Septiembre">15 de Septiembre</option>
+      </select>
+    )}
+  </div>
+</div>
+
+          {/* Imagen */}
+          <div className="col-span-2 mt-4">
+            <label className="block font-semibold">Imagen</label>
+            <input
+              type="file"
+              accept="image/*"
+              className="border p-2 w-full rounded"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  const file = e.target.files[0];
+                  const imageUrl = URL.createObjectURL(file);
+                  setNewProduct({ ...newProduct, foto: imageUrl });
                 }
-              >
-                <option value={0}>Selecciona categoría</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </select>
-
-              {/* Botón de Detalles */}
-              {(newProduct.categoria_id === 1 ||
-                newProduct.categoria_id === 2) && (
-                <button
-                  type="button"
-                  onClick={() => setShowDetailsModal(true)}
-                  className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  ➕
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Ocasión (solo si es Festividades) */}
-          {newProduct.categoria_id === 5 && (
-            <div>
-              <label className="block font-semibold">Ocasión</label>
-              <select
-                className="border p-2 w-full rounded"
-                value={newProduct.ocasion}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, ocasion: e.target.value })
-                }
-              >
-                <option value="">Selecciona ocasión</option>
-                <option value="Día de Reyes">Día de Reyes</option>
-                <option value="Navidad">Navidad</option>
-                <option value="Halloween">Halloween</option>
-                <option value="15 de Septiembre">15 de Septiembre</option>
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* Imagen */}
-        <div className="mt-4">
-          <label className="block font-semibold">Imagen</label>
-          <input
-            type="file"
-            accept="image/*"
-            className="border p-2 w-full rounded"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                const file = e.target.files[0];
-                const imageUrl = URL.createObjectURL(file);
-                setNewProduct({ ...newProduct, foto: imageUrl });
-              }
-            }}
-          />
-          {newProduct.foto && (
-            <img
-              src={newProduct.foto}
-              alt="Preview"
-              className="w-24 h-24 object-cover mt-2 rounded"
+              }}
             />
-          )}
+            {newProduct.foto && (
+              <img
+                src={newProduct.foto}
+                alt="Preview"
+                className="w-24 h-24 object-cover mt-2 rounded"
+              />
+            )}
+          </div>
         </div>
 
         {/* Botón Guardar */}
@@ -211,12 +290,12 @@ const Products: React.FC = () => {
             className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             onClick={addProduct}
           >
-            Guardar producto
+            {productoEditar ? "Actualizar producto" : "Guardar producto"}
           </button>
         </div>
       </div>
 
-      {/* 🟢 Modal de Detalles */}
+      {/* Modal de Detalles */}
       {showDetailsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-96">
@@ -228,12 +307,7 @@ const Products: React.FC = () => {
                 type="text"
                 className="border p-2 w-full"
                 value={productDetails.talla}
-                onChange={(e) =>
-                  setProductDetails({
-                    ...productDetails,
-                    talla: e.target.value,
-                  })
-                }
+                onChange={(e) => setProductDetails({ ...productDetails, talla: e.target.value })}
               />
             </div>
 
@@ -243,12 +317,7 @@ const Products: React.FC = () => {
                 type="text"
                 className="border p-2 w-full"
                 value={productDetails.modelo}
-                onChange={(e) =>
-                  setProductDetails({
-                    ...productDetails,
-                    modelo: e.target.value,
-                  })
-                }
+                onChange={(e) => setProductDetails({ ...productDetails, modelo: e.target.value })}
               />
             </div>
 
@@ -258,26 +327,15 @@ const Products: React.FC = () => {
                 type="text"
                 className="border p-2 w-full"
                 value={productDetails.color}
-                onChange={(e) =>
-                  setProductDetails({
-                    ...productDetails,
-                    color: e.target.value,
-                  })
-                }
+                onChange={(e) => setProductDetails({ ...productDetails, color: e.target.value })}
               />
             </div>
 
             <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => setShowDetailsModal(false)}
-              >
+              <button className="px-4 py-2 bg-gray-300 rounded" onClick={() => setShowDetailsModal(false)}>
                 Cancelar
               </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-                onClick={() => setShowDetailsModal(false)}
-              >
+              <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => setShowDetailsModal(false)}>
                 Guardar
               </button>
             </div>

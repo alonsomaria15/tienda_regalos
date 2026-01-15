@@ -57,7 +57,6 @@ const Layout: React.FC<Props> = ({ children }) => {
             <Link to="/productos" className="hover:bg-gray-700 px-3 py-1 rounded">📋 Lista</Link>
             <Link to="/productos/agregar" className="hover:bg-gray-700 px-3 py-1 rounded">➕ Agregar</Link>
             <Link to="/productos/bajo-stock" className="hover:bg-gray-700 px-3 py-1 rounded">⚠️ Bajo stock</Link>
-            <Link to="/productos/inventario" className="hover:bg-gray-700 px-3 py-1 rounded">🏬 Inventario</Link>
             <Link to="/productos/movimientos" className="hover:bg-gray-700 px-3 py-1 rounded">🔁 Movimientos</Link>
           </div>
 
