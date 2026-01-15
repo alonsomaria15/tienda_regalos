@@ -2,13 +2,36 @@ import React, { useState } from "react";
 import { Product } from "../types/Product";
 
 const BajoStock: React.FC = () => {
-  const [products] = useState<Product[]>([
-    { id: 1, name: "Camiseta", categoria_id: 2, sucursal: 1, stock: 3, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0001", festividad:"Navidad" },
-    { id: 2, name: "Pantalón", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0002",festividad:"Navidad"  },
-    { id: 3, name: "Zapatos", categoria_id: 3, sucursal: 2, stock: 1, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0003",festividad:"Navidad"  },
-    { id: 4, name: "Sombrero", categoria_id: 4, sucursal: 2, stock: 5, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0004" ,festividad:"Navidad" },
-    { id: 5, name: "Bufanda", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0005",festividad:"Navidad"  },
-  ]);
+const [products] = useState<Product[]>([
+  {
+    id: 1, name: "Camiseta", categoria_id: 2, sucursal: 1, stock: 3, estado: "Bajo", costo: 0, precio: 0, foto: "https://media.istockphoto.com/id/483960103/es/foto/camiseta-negra-frontal-en-blanco-con-trazado-de-recorte.jpg?s=612x612&w=0&k=20&c=WTtkplvVBMxKTStHvG6rzKlw1G246bJ5apgJcNiFT_Q=", codigo_barras: "PROD-20260115-0001", detalles: { color: "Azul", talla: "M", modelo: "tiburon" },
+    festividad: ""
+  },
+  { id: 2, name: "Pantalón", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "https://m.media-amazon.com/images/I/71UHzx+7SKL._AC_SX679_.jpg", codigo_barras: "PROD-20260115-0002", detalles: {
+    color: "Negro", talla: "L",
+    modelo: ""
+  } ,festividad:""},
+  { id: 3, name: "Zapatos", categoria_id: 3, sucursal: 2, stock: 1, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0003", detalles: {
+    color: "Negro", talla: "42",
+    modelo: ""
+  } ,festividad:""},
+  { id: 4, name: "Sombrero", categoria_id: 4, sucursal: 2, stock: 5, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0004", detalles: {
+    color: "Beige",
+    talla: "",
+    modelo: ""
+  },festividad:"" },
+  { id: 5, name: "Bufanda", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0005", detalles: {
+    color: "Rojo",
+    talla: "",
+    modelo: ""
+  } ,festividad:""},
+]);
+
+// Modal de imagen
+const [zoomImage, setZoomImage] = useState<string | null>(null);
+// Guardar el producto que se va a actualizar
+const [stockProduct, setStockProduct] = useState<Product | null>(null);
+
 
   // Diccionario de sucursales
   const sucursales: { [key: number]: string } = {
@@ -122,6 +145,7 @@ const BajoStock: React.FC = () => {
       <table className="w-full border border-gray-300 mb-4">
         <thead>
           <tr className="bg-gray-200 text-left">
+            <th className="py-2 px-4 border">Código</th>
             <th className="py-2 px-4 border">Producto</th>
             <th className="py-2 px-4 border">Detalles</th>
             <th className="py-2 px-4 border">Categoría</th>
@@ -132,28 +156,48 @@ const BajoStock: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {currentProducts.map((p) => (
-            <tr key={p.id} className="border-b hover:bg-gray-50">
-              <td className="py-2 px-4">{p.name}</td>
-              <td className="py-2 px-4">
-                {p.detalles?.talla} {p.detalles?.modelo} {p.detalles?.color} ${p.precio}
-              </td>
-              <td className="py-2 px-4">{p.categoria_id}</td>
-              <td className="py-2 px-4">{sucursales[p.sucursal]}</td>
-              <td className="py-2 px-4">{p.stock}</td>
-              <td className="py-2 px-4">{p.estado}</td>
-              <td className="py-2 px-4">
-                <button
-                  type="button"
-                  onClick={() => setAgregarStock(true)}
-                  className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  +
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+  {products.map((p) => (
+    <tr key={p.id}>
+      <td className="border p-2">{p.codigo_barras}</td>
+      <td className="border p-2 flex items-center gap-2">
+        <img
+  src={p.foto}
+  alt={p.name}
+  className="w-8 h-8 object-cover rounded cursor-pointer"
+  onClick={() => setZoomImage(p.foto)}
+/>
+
+        <span>{p.name}</span>
+      </td>
+    <td className="border p-2">
+  {p.detalles ? (
+    <div className="flex flex-col">
+      {p.detalles.color && <span>Color: {p.detalles.color}</span>}
+      {p.detalles.talla && <span>Talla: {p.detalles.talla}</span>}
+      {p.detalles.modelo && <span>Modelo: {p.detalles.modelo}</span>}
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
+      <td className="border p-2">{p.categoria_id}</td>
+      <td className="border p-2 text-center">{p.sucursal}</td>
+      <td className="border p-2 text-center">{p.stock}</td>
+      <td className="border p-2">{p.estado}</td>
+      <td className="border p-2 flex gap-1">
+        <button
+  type="button"
+  className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+  onClick={() => setStockProduct(p)} // ⚡ abre modal con este producto
+>
+  +
+</button>
+
+      </td>
+    </tr>
+  ))}
+</tbody>
+
       </table>
 
        {/* Paginación + contador */}
@@ -198,9 +242,8 @@ const BajoStock: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-96">
             <h3 className="text-lg font-bold mb-4">Detalles del Producto</h3>
-
             <div className="mb-2">
-              <label>Producto <b>Sandalias Tiburon</b></label>
+              <label>Tipo</label>
             </div>
             <div className="mb-2">
               <label>Modelo <b>Tiburon</b></label>
@@ -237,6 +280,67 @@ const BajoStock: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Modal Imagen */}
+{zoomImage && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+    onClick={() => setZoomImage(null)}
+  >
+    <img
+      src={zoomImage}
+      alt="Producto"
+      className="max-w-[90%] max-h-[90%] object-contain rounded shadow-lg"
+    />
+  </div>
+)}
+
+{stockProduct && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded shadow-md w-96">
+      <h3 className="text-lg font-bold mb-4">Agregar Stock</h3>
+
+      <div className="mb-2">
+        <label>Producto:</label>
+        <p className="font-semibold">{stockProduct.name}</p>
+      </div>
+
+      <div className="mb-2">
+        <label>Stock actual:</label>
+        <p className="font-semibold">{stockProduct.stock}</p>
+      </div>
+
+      <div className="mb-2">
+        <label>Cantidad a agregar:</label>
+        <input
+          type="number"
+          className="border p-2 w-full rounded"
+          placeholder="Ingrese cantidad"
+        />
+      </div>
+
+      <div className="flex justify-end gap-2 mt-4">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded"
+          onClick={() => setStockProduct(null)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded"
+          onClick={() => {
+            // ⚡ Aquí puedes actualizar el stock en tu estado o llamar API
+            setStockProduct(null);
+          }}
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

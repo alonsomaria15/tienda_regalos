@@ -9,31 +9,37 @@ const ProductTable: React.FC = () => {
   // ✅ useState debe ir dentro del componente
   const [products] = useState<Product[]>([
     {
-      id: 1, name: "Camiseta", costo: 100, precio: 150, stock: 10, categoria_id: 1, foto: "",
-      sucursal: 1,
-      estado: "",
-      codigo_barras: "PROD-20260115-0001",
-      festividad: "Navidad"
+      id: 1, name: "Camiseta", categoria_id: 2, sucursal: 1, stock: 3, estado: "Bajo", costo: 0, precio: 0, foto: "https://media.istockphoto.com/id/483960103/es/foto/camiseta-negra-frontal-en-blanco-con-trazado-de-recorte.jpg?s=612x612&w=0&k=20&c=WTtkplvVBMxKTStHvG6rzKlw1G246bJ5apgJcNiFT_Q=", codigo_barras: "PROD-20260115-0001", detalles: { color: "Azul", talla: "M", modelo: "tiburon" },
+      festividad: ""
     },
-    {
-      id: 2, name: "Pantalón", costo: 200, precio: 300, stock: 5, categoria_id: 1, foto: "", sucursal: 2,
-      estado: "",
-      codigo_barras: "PROD-20260115-0002",
-      festividad: "Dia de Reyes"
-    },
-    {
-      id: 3, name: "Zapatos", costo: 350, precio: 500, stock: 8, categoria_id: 2, foto: "", sucursal: 1,
-      estado: "",
-      codigo_barras: "PROD-20260115-0003",
-      festividad: "Hallowen"
-    },
+    { id: 2, name: "Pantalón", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "https://m.media-amazon.com/images/I/71UHzx+7SKL._AC_SX679_.jpg", codigo_barras: "PROD-20260115-0002", detalles: {
+      color: "Negro", talla: "L",
+      modelo: ""
+    } ,festividad:""},
+    { id: 3, name: "Zapatos", categoria_id: 3, sucursal: 2, stock: 1, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0003", detalles: {
+      color: "Negro", talla: "42",
+      modelo: ""
+    } ,festividad:""},
+    { id: 4, name: "Sombrero", categoria_id: 4, sucursal: 2, stock: 5, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0004", detalles: {
+      color: "Beige",
+      talla: "",
+      modelo: ""
+    },festividad:"" },
+    { id: 5, name: "Bufanda", categoria_id: 1, sucursal: 1, stock: 2, estado: "Bajo", costo: 0, precio: 0, foto: "", codigo_barras: "PROD-20260115-0005", detalles: {
+      color: "Rojo",
+      talla: "",
+      modelo: ""
+    } ,festividad:""},
   ]);
 
+  // Modal de imagen
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
    // Sucursales
   const sucursales: { [key: number]: string } = {
     1: "Alberto G. 411",
     2: "Francisco V. 104",
   };
+  
 
       // Filtros
         const [selectedSucursal, setSelectedSucursal] = useState("0");
@@ -105,6 +111,23 @@ const ProductTable: React.FC = () => {
             <option value="4">Sombreros</option>
           </select>
         </div>
+         <div>
+          <label className="block font-semibold mb-1">Categoría</label>
+          <select
+            value={selectedCategoria}
+            onChange={(e) => {
+              setSelectedCategoria(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border p-2 rounded"
+          >
+            <option value="0">Todas las categorías</option>
+            <option value="1">Ropa</option>
+            <option value="2">Calzado</option>
+            <option value="3">Accesorios</option>
+            <option value="4">Sombreros</option>
+          </select>
+        </div>
       </div>
 
       {/* 🔍 Buscador + Botones de exportación */}
@@ -142,28 +165,47 @@ const ProductTable: React.FC = () => {
         <thead>
           <tr className="bg-gray-200 text-left">
             <th className="py-2 px-4 border">Producto</th>
-            <th className="py-2 px-4 border">Precio</th>
-            <th className="py-2 px-4 border">Costo</th>
+            <th className="py-2 px-4 border">Detalles</th>
+            <th className="py-2 px-4 border">Costo/Precio Venta</th>
             <th className="py-2 px-4 border">Stock</th>
-            <th className="py-2 px-4 border">Categoría</th>
-            <th className="py-2 px-4 border">Imagen</th>
+            <th className="py-2 px-4 border">Sucursal</th>
             <th className="py-2 px-4 border">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {currentProducts.map((p) => (
             <tr key={p.id} className="border-b hover:bg-gray-50">
-              <td className="py-2 px-4">{p.name}</td>
-              <td className="py-2 px-4">${p.precio}</td>
-              <td className="py-2 px-4">${p.costo}</td>
-              <td className="py-2 px-4">{p.stock}</td>
-              <td className="py-2 px-4">{p.categoria_id}</td>
+         <td className="border p-2 flex items-center gap-2">
+  <img
+    src={p.foto}
+    alt={`${p.name} - ${p.codigo_barras}`}
+    className="w-8 h-8 object-cover rounded cursor-pointer"
+    onClick={() => setZoomImage(p.foto)}
+  />
+  <div className="flex flex-col">
+    <span className="font-medium">{p.name}</span>
+    <span className="text-gray-500 text-sm">{p.codigo_barras}</span>
+  </div>
+</td>
+
+             <td className="border p-2">
+  {p.detalles ? (
+    <div className="flex flex-col">
+      {p.detalles.color && <span>Color: {p.detalles.color}</span>}
+      {p.detalles.talla && <span>Talla: {p.detalles.talla}</span>}
+      {p.detalles.modelo && <span>Modelo: {p.detalles.modelo}</span>}
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
               <td className="py-2 px-4">
-                {p.foto ? (
-                  <img src={p.foto} alt={p.name} className="w-12 h-12 object-cover rounded" />
-                ) : (
-                  <span className="text-gray-400">Sin imagen</span>
-                )}
+  ${p.costo} / ${p.precio}
+</td>
+
+              <td className="py-2 px-4">{p.stock}</td>
+              <td className="py-2 px-4">
+                {p.sucursal}
               </td>
               <td className="py-2 px-4">
                 <button type="button" className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700" 
@@ -202,6 +244,7 @@ const ProductTable: React.FC = () => {
         {i + 1}
       </button>
     ))}
+    
 
     <button
       className="px-3 py-1 border rounded disabled:opacity-50"
@@ -211,6 +254,19 @@ const ProductTable: React.FC = () => {
       Siguiente
     </button>
   </div>
+  {/* Modal Imagen */}
+{zoomImage && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+    onClick={() => setZoomImage(null)}
+  >
+    <img
+      src={zoomImage}
+      alt="Producto"
+      className="max-w-[90%] max-h-[90%] object-contain rounded shadow-lg"
+    />
+  </div>
+)}
 </div>
 
     </div>
