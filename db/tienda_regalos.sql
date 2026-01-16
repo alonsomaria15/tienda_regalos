@@ -126,7 +126,6 @@ CREATE TABLE clientes (
   fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
 );
-
 -- ------------------------------------------------------------
 -- Tabla: ventas
 -- ------------------------------------------------------------

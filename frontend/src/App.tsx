@@ -7,10 +7,12 @@ import {
 } from "react-router-dom";
 import Layout from "./componentes/Layout";
 import Dashboard from "./pages/Dasboard";
-import ProductTable from "./pages/ProductTable";
-import Products from "./pages/AgregarProducts";
-import BajoStock from "./pages/BajoStock";
-import Movimientos from "./pages/Movimientos";
+import ProductTable from "./pages/Productos/ProductTable";
+import Products from "./pages/Productos/AgregarProducts";
+import BajoStock from "./pages/Productos/BajoStock";
+import Movimientos from "./pages/Productos/Movimientos";
+import AgregarCliente from "./pages/Clientes/AgregarClientes";
+import TablaClientes from "./pages/Clientes/TablaCliente";
 
 export default function App() {
   return (
@@ -29,6 +31,12 @@ export default function App() {
           <Route path="/productos/movimientos" element={<Movimientos />} />
           {/* ✅ Ruta para actualizar un producto */}
           <Route path="/producto/:id" element={<Products />} />
+
+          {/* ✅ Ruta para agregar cliente */}
+          <Route path="/clientes/nuevo" element={<AgregarCliente />} />
+          {/* ✅ Ruta para mostrar Tabla Cliente */}
+          <Route path="/clientes/lista" element={<TablaClientes />} />
+
           {/* ✅ Redirección si no existe la ruta */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

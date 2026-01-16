@@ -172,6 +172,45 @@ const Layout: React.FC<Props> = ({ children }) => {
             </Link>
           </div>
 
+          {/* ========= CLIENTES ========= */}
+          <button
+            onClick={() => toggleMenu("clientes")}
+            className={`flex justify-between items-center px-3 py-2 rounded w-full text-left transition ${
+              openMenu === "clientes"
+                ? "bg-gray-700 text-yellow-300"
+                : "hover:bg-gray-700"
+            }`}
+          >
+            <span>💳 Clientes</span>
+            <span
+              className={`transition-transform duration-300 ${
+                openMenu === "clientes" ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          </button>
+          <div
+            className={`ml-6 flex flex-col gap-1 overflow-hidden transition-all duration-300 ${
+              openMenu === "clientes"
+                ? "max-h-24 opacity-100"
+                : "max-h-0 opacity-0"
+            }`}
+          >
+            <Link
+              to="/clientes/nuevo"
+              className="hover:bg-gray-700 px-3 py-1 rounded"
+            >
+              ➕ Registrar
+            </Link>
+            <Link
+              to="/clientes/lista"
+              className="hover:bg-gray-700 px-3 py-1 rounded"
+            >
+              📋 Lista
+            </Link>
+          </div>
+
           {/* ========= CAJA ========= */}
           <button
             onClick={() => toggleMenu("caja")}

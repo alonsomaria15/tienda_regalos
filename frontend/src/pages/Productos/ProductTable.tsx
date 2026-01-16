@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Product } from "../types/Product";
+import { Product } from "../../types/Product";
 import { useNavigate } from "react-router-dom";
 //Librerias para excel
 import * as XLSX from "xlsx";

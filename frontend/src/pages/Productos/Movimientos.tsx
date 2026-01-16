@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Product } from "../types/Product";
+import { Product } from "../../types/Product";
 
 const Products: React.FC = () => {
   const [month, setMonth] = useState(new Date().getMonth() + 1); // Mes actual por defecto (1-12)

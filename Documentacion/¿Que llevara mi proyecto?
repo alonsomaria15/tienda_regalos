@@ -1,6 +1,6 @@
 ¿Que llevara mi proyecto?
 
-* mejorar su diseño
+* mejorar su diseño (todo)
 
 * Hacer bien la pestaña de movimientos cuando ya tenga registros
 * ver que combos se llenan de base
@@ -8,28 +8,3 @@
 - (agregar) => categoria
 
 
-lista: 
-* filtra por sucursal, categora, festividad
-* busca por nombre de producto o codigo y tiene  un boton de excel y pdf
-* la tabla contiene: 
-Producto	Detalles	Costo/Precio Venta	Stock	Sucursal	Acciones
-* en acciones actualiza el producto
-
-agregar producto
-* registra producto stock costo precio venta ; categoria detalles si es ropa o calzado
-* y festividades
-* carga la imagen del producto
-
-stock bajo
-* filtra por sucursal y categoria
-* busca producto y exporta en excel y pdf
-* la tabla contiene
-Producto	Detalles	Categoría	Sucursal	Stock	Acción
-* pinta de rojo el producto que esta por agotarse
-
-movimientos
-* filtro por mes, sucursales, tipo movimiento
-* filtro por nombre del producto o codigo 
-* registro movimiento y traspaso abriendose los modales
-* mi tablita queda de la siguiente forma
-Código	Producto	Cantidad	Fecha	Tipo	Origen	Destino	Concepto

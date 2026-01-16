@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Product } from "../types/Product";
+import { Product } from "../../types/Product";
 
 const Products: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // ⚡ id de la URL
