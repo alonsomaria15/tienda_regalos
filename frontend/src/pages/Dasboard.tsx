@@ -4,7 +4,9 @@ const DashboardHome: React.FC = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">Dashboard General</h1>
-      <p className="text-gray-600">Bienvenido a tu sistema de Tienda Regalos 🎁</p>
+      <p className="text-gray-600">
+        Bienvenido a tu sistema de Tienda Regalos 🎁
+      </p>
 
       {/* Tarjetas de resumen */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -28,7 +30,9 @@ const DashboardHome: React.FC = () => {
 
       {/* Tabla o sección adicional */}
       <div className="bg-white rounded-xl shadow p-4">
-        <h2 className="text-lg font-semibold mb-3">Últimos movimientos de caja</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          Últimos movimientos de caja
+        </h2>
         <table className="w-full text-left border-t">
           <thead>
             <tr className="text-gray-600">

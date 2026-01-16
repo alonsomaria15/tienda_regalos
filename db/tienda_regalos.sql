@@ -31,6 +31,20 @@ CREATE TABLE categorias (
 );
 
 -- ------------------------------------------------------------
+-- Tabla: festividades
+-- (Solo se usa cuando la categoría del producto es “Festividad”)
+-- ------------------------------------------------------------
+CREATE TABLE festividades (
+  id_festividad INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  fecha_inicio DATE NULL,
+  fecha_fin DATE NULL,
+  activo TINYINT(1) DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ------------------------------------------------------------
 -- Tabla: productos
 -- ------------------------------------------------------------
 CREATE TABLE productos (
@@ -38,13 +52,17 @@ CREATE TABLE productos (
   nombre VARCHAR(100) NOT NULL,
   codigo_barras VARCHAR(50) UNIQUE,
   categoria_id INT,
+  festividad_id INT NULL, -- 🔹 Solo aplica si la categoría es "Festividad"
   costo DECIMAL(10,2),
   precio DECIMAL(10,2),
   foto VARCHAR(255) DEFAULT NULL,
+  sucursal_id INT, -- 🔹 En qué sucursal está el producto
   activo TINYINT(1) DEFAULT 1,
   fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
   fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (categoria_id) REFERENCES categorias(id_categoria)
+  FOREIGN KEY (categoria_id) REFERENCES categorias(id_categoria),
+  FOREIGN KEY (festividad_id) REFERENCES festividades(id_festividad),
+  FOREIGN KEY (sucursal_id) REFERENCES sucursales(id_sucursal)
 );
 
 -- ------------------------------------------------------------
@@ -76,8 +94,7 @@ CREATE TABLE inventario_sucursal (
 
 -- ------------------------------------------------------------
 -- Tabla: movimientos_inventario
--- Registra todos los movimientos físicos de productos:
--- Entradas, Salidas, Ajustes y Traspasos entre sucursales
+-- Registra entradas, salidas, ajustes y traspasos entre sucursales
 -- ------------------------------------------------------------
 CREATE TABLE movimientos_inventario (
   id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,7 +111,6 @@ CREATE TABLE movimientos_inventario (
   FOREIGN KEY (sucursal_origen_id) REFERENCES sucursales(id_sucursal),
   FOREIGN KEY (sucursal_destino_id) REFERENCES sucursales(id_sucursal)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- ------------------------------------------------------------
 -- Tabla: clientes
@@ -182,20 +198,29 @@ ADD FOREIGN KEY (movimiento_caja_id) REFERENCES movimientos_caja(id_movimiento);
 -- ------------------------------------------------------------
 -- Datos iniciales
 -- ------------------------------------------------------------
+
+-- Sucursales
 INSERT INTO sucursales (nombre, direccion, telefono) VALUES
 ('Sucursal 1', 'Centro', '555-111-2222'),
 ('Sucursal 2', 'Norte', '555-333-4444');
 
+-- Categorías
 INSERT INTO categorias (nombre_categoria) VALUES
 ('Ropa'),
 ('Calzado'),
 ('Accesorios'),
 ('Belleza'),
 ('Regalos'),
-('Navidad'),
-('Halloween'),
-('15 Septiembre'),
-('Día de Reyes');
+('Festividad');
+
+-- Festividades
+INSERT INTO festividades (nombre, fecha_inicio, fecha_fin) VALUES
+('Navidad', '2026-12-01', '2026-12-31'),
+('San Valentín', '2026-02-01', '2026-02-14'),
+('Día de las Madres', '2026-05-01', '2026-05-10'),
+('Halloween', '2026-10-01', '2026-10-31'),
+('15 Septiembre', '2026-09-01', '2026-09-16'),
+('Día de Reyes', '2026-01-01', '2026-01-06');
 
 -- Fin del script
 

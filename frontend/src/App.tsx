@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Layout from "./componentes/Layout";
 import Dashboard from "./pages/Dasboard";
 import ProductTable from "./pages/ProductTable";
@@ -23,7 +28,7 @@ export default function App() {
           {/* ✅ Ruta movimientos */}
           <Route path="/productos/movimientos" element={<Movimientos />} />
           {/* ✅ Ruta para actualizar un producto */}
-           <Route path="/producto/:id" element={<Products />} />
+          <Route path="/producto/:id" element={<Products />} />
           {/* ✅ Redirección si no existe la ruta */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
